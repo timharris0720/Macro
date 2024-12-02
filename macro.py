@@ -10,11 +10,6 @@ timeSinceLastClick = time.time()
 user32 = ctypes.windll.user32
 inputs = []
 prevMousePos = (0,0)
-class MouseEvents(enum.Enum):
-    MOVE = 0
-    BUTTON_CLICK = 1
-    KEY_CLICK_DOWN = 2
-    KEY_CLICK_UP = 3
 
 key_map =  {
 'a' : 0x41,
@@ -58,6 +53,7 @@ key_map =  {
 'enter' : 0x0D,
 'space' : 0x20,
 'backspace': 0x08,
+'escape': 0x1B, 
 }
 
   
@@ -74,7 +70,7 @@ def record_on_move(x,y):
             }
         inputs.append(mouseMoveEvent)
         prevMousePos = position
-    timeSinceLastClick = time.time()
+        timeSinceLastClick = time.time()
 def record_on_click(x,y, button, pressed):
     global timeSinceLastClick
     if pressed:
@@ -94,7 +90,7 @@ def record_on_click(x,y, button, pressed):
             "timeSinceStart" : timeToCall
             }
         inputs.append(mouseClickEvent)
-    timeSinceLastClick = time.time()
+        timeSinceLastClick = time.time()
 def onKeyPress(key):
     global timeSinceLastClick
     type = "key_down"
@@ -141,8 +137,18 @@ def onKeyPress(key):
             }
             inputs.append(keyClickEvent)
             timeSinceLastClick = time.time()
+        elif key == keyboard.Key.esc:
+            print(f"Key enter pressed. Simulating key press...")
+            print(key)
+            keyClickEvent = {
+                "type":type,
+                "key_clicked" : key_map['escape'],
+                "timeSinceStart" : timeToCall
+            }
+            inputs.append(keyClickEvent)
+            timeSinceLastClick = time.time()
     except AttributeError:
-        if key != keyboard.Key.enter or key != keyboard.Key.space or key != keyboard.Key.backspace:
+        if key != keyboard.Key.enter or key != keyboard.Key.space or key != keyboard.Key.backspace or key != keyboard.Key.esc:
             print("Special Key Pressed")
 def onKeyRelease(key):
     global timeSinceLastClick
@@ -190,8 +196,18 @@ def onKeyRelease(key):
             }
             inputs.append(keyClickEvent)
             timeSinceLastClick = time.time()
+        elif key == keyboard.Key.esc:
+            print(f"Key enter pressed. Simulating key press...")
+            print(key)
+            keyClickEvent = {
+                "type":type,
+                "key_clicked" : key_map['escape'],
+                "timeSinceStart" : timeToCall
+            }
+            inputs.append(keyClickEvent)
+            timeSinceLastClick = time.time()
     except AttributeError:
-        if key != keyboard.Key.enter or key != keyboard.Key.space or key != keyboard.Key.backspace:
+        if key != keyboard.Key.enter or key != keyboard.Key.space or key != keyboard.Key.backspace or key != keyboard.Key.esc:
             print("Special Key Pressed")
     
 def replay(inputList):
@@ -203,9 +219,9 @@ def replay(inputList):
             if i["button_clicked"] == "left":
                 user32.mouse_event(2,0,0,0,0)
                 user32.mouse_event(4,0,0,0,0)
-            else:
-                user32.mouse_event(8,0,0,0,0)
-                user32.mouse_event(10,0,0,0,0)
+            if i["button_clicked"] == "right":
+                user32.mouse_event(0x08 ,0,0,0,0)
+                user32.mouse_event(0x10,0,0,0,0)
         if i["type"] == "move":
             print(f"Moving to x: {i["position"][0]}   y: {i["position"][1]}")
             user32.SetCursorPos(i["position"][0], i["position"][1])
