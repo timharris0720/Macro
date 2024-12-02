@@ -14,11 +14,11 @@ python macro.py --record
 ### Repeating inputs
 
 ```
-python macro.py -f out.py -t 
+python macro.py -f out.json -t 
 ```
 
 ### run once
 
 ```
-python macro.py -f out.py
+python macro.py -f out.json
 ```
