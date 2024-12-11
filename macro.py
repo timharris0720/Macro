@@ -1,8 +1,5 @@
 from pynput import *
-import pyautogui as p
-import json, time, enum
-import argparse, math
-import ctypes
+import json, time, argparse, ctypes
 awareness = ctypes.c_int()
 ctypes.windll.shcore.SetProcessDpiAwareness(2)
 global timeSinceLastClick
@@ -234,10 +231,10 @@ def replay(inputList):
         time.sleep(i["timeSinceStart"])
 
 
-parser = argparse.ArgumentParser(prog='ProgramName')
+parser = argparse.ArgumentParser(prog='Macro')
 parser.add_argument('-r', '--record', action='store_true')  
-parser.add_argument('-f', "--event_file")  
-parser.add_argument('-t', "--repeating",action='store_true')  
+parser.add_argument('-f', "--event_file", required=True, help="File That contains macro commands in json format")  
+parser.add_argument('-t', "--repeating",action='store_true') 
 args = parser.parse_args()
 
 
@@ -255,7 +252,7 @@ if args.record == True:
         except KeyboardInterrupt:
             ml.stop()
             kl.stop()
-            with open("out.json", "w") as f:
+            with open(args.event_file, "w") as f:
                 f.write(json.dumps(inputs, indent=4))
             f.close()
             
